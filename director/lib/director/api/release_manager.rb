@@ -37,13 +37,17 @@ module Bosh::Director
 
       def create_release(user, release_bundle, options = {})
         release_dir = Dir.mktmpdir("release")
-        release_tgz = File.join(release_dir, RELEASE_TGZ)
-        unless check_available_disk_space(release_dir, release_bundle.size)
-          raise NotEnoughDiskSpace, "Uploading release archive failed. " +
-            "Insufficient space on BOSH director in #{release_dir}"
+        if options['remote']
+          options['location'] = release_bundle
+        else
+          release_tgz = File.join(release_dir, RELEASE_TGZ)
+          unless check_available_disk_space(release_dir, release_bundle.size)
+            raise NotEnoughDiskSpace, "Uploading release archive failed. " +
+              "Insufficient space on BOSH director in #{release_dir}"
+          end
+  
+          write_file(release_tgz, release_bundle)
         end
-
-        write_file(release_tgz, release_bundle)
         task = create_task(user, :update_release, "create release")
         Resque.enqueue(Jobs::UpdateRelease, task.id, release_dir, options)
         task
