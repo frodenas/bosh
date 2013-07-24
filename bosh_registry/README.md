@@ -46,7 +46,7 @@ These are the options for the cloud connection where registry will fetch for
 the IP addresses belonging to a instances:
 
 * `plugin` (required)
-  Cloud Provider (currently supported: aws and openstack)
+  Cloud Provider (currently supported: aws, openstack and rackspace)
 
 #### AWS options
 
@@ -77,6 +77,21 @@ These are the credentials to connect to OpenStack services:
   OpenStack region
 * `endpoint_type` (optional)
   OpenStack endpoint type (publicURL (default), adminURL, internalURL)
+
+#### Rackspace options
+
+These are the credentials to connect to Rackspace services:
+
+* `username` (required)
+  Rackspace Username
+* `api_key` (required)
+  Rackspace API key
+* `region` (optional, defaults to DFW)
+  Rackspace region
+* `auth_url` (optional)
+  Rackspace authorization endpoint
+* `connection_options` (optional)
+  Connection parameters
 
 ## Example
 

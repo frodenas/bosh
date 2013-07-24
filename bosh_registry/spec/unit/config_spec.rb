@@ -110,6 +110,21 @@ describe Bosh::Registry do
       im.should be_kind_of(Bosh::Registry::InstanceManager::Openstack)
     end
 
+    it 'reads provided configuration file and sets singletons for Rackspace' do
+      Fog::Compute.stub(:new)
+
+      config = valid_config
+      config['cloud'] = {
+        'plugin' => 'rackspace',
+        'rackspace' => {
+          'username' => 'foo',
+          'api_key' => 'bar',
+        }
+      }
+      Bosh::Registry.configure(config)
+
+      expect(Bosh::Registry.instance_manager).to be_kind_of(Bosh::Registry::InstanceManager::Rackspace)
+    end
   end
 
   describe "database configuration" do

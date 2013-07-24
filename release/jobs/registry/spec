@@ -68,3 +68,15 @@ properties:
   openstack.endpoint_type:
     description: OpenStack endpoint type (optional, by default publicURL)
     default: publicURL
+
+  # For Rackspace
+  rackspace.username:
+    description: Rackspace Username
+  rackspace.api_key:
+    description: Rackspace API key
+  rackspace.region:
+    description: Rackspace region (optional)
+  rackspace.auth_url:
+    description: Rackspace authorization endpoint (optional)
+  rackspace.connection_options:
+    description: Connection parameters (optional)

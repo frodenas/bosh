@@ -41,4 +41,19 @@ cloud:
     endpoint_type: <%= endpoint_type %>
     <% end %>
 <% end %>
+<% if_p('rackspace.username', 'rackspace.api_key') do |username, api_key| %>
+  plugin: rackspace <% plugin = 'rackspace' %>
+  rackspace:
+    username: <%= username %>
+    api_key: <%= api_key %>
+    <% if_p('rackspace.region') do |region| %>
+    region: <%= region %>
+    <% end %>
+    <% if_p('rackspace.auth_url') do |auth_url| %>
+    auth_url: <%= auth_url %>
+    <% end %>
+    <% if_p('rackspace.connection_options') do |connection_options| %>
+    connection_options: <%= JSON.generate(connection_options) %>
+    <% end %>
+<% end %>
 <% raise 'Could not find cloud plugin' if plugin.nil? %>
