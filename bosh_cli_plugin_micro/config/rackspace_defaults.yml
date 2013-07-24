@@ -1,0 +1,48 @@
+---
+name:
+
+logging:
+  level: INFO
+
+dir:
+
+network:
+  type: dynamic
+  cloud_properties: {}
+
+env:
+  bosh:
+    password:
+
+resources:
+  persistent_disk: 102400
+  cloud_properties:
+   instance_type: '1GB Standard Instance'
+
+cloud:
+  plugin: rackspace
+  properties:
+    rackspace:
+      username:
+      api_key:
+      region:
+      auth_url:
+      connection_options:
+      ssh_user: vcap
+    registry:
+      endpoint: http://admin:admin@localhost:25889
+      user: admin
+      password: admin
+    agent:
+      ntp: []
+      blobstore:
+        provider: local
+        options:
+          blobstore_path: /var/vcap/micro_bosh/data/cache
+      mbus:
+
+apply_spec:
+  properties: {}
+  agent:
+    blobstore: {}
+    nats: {}
