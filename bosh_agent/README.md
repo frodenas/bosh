@@ -20,9 +20,10 @@ The Agent performs the following tasks:
 
 For each different agent infrastructure:
 
-* `bosh_agent -c -I aws` => attempts to load the config settings from an AWS registry; the registry HTTP address is provided to the bosh_agent via the [AWS user-data](https://github.com/cloudfoundry/bosh/blob/master/bosh_aws_cpi/lib/cloud/aws/instance_manager.rb#L159-L166)
-* `bosh_agent -c -I vsphere` => attempts to load the config settings via a mounted fake cdrom
-* `bosh_agent -c -I openstack`  => attempts to load the config settings from OpenStack registry (same as AWS registry - bosh_registry project folder); openstack user-data is provided by both user-data and a user-data.json file (the former isn't supported by Rackspace)
+* `bosh_agent -c -I aws` => attempts to load the config settings from Bosh registry; the registry HTTP address is provided to the Bosh agent via user-data when the [AWS CPI] (https://github.com/cloudfoundry/bosh/bosh_aws_cpi/) creates the instance.
+* `bosh_agent -c -I openstack` => attempts to load the config settings from Bosh registry; the registry HTTP address is provided to the Bosh agent via user-data and a injected user-data.json file when the [OpenStack CPI] (https://github.com/cloudfoundry/bosh/bosh_openstack_cpi/) creates the instance.
+* `bosh_agent -c -I rackspace` => attempts to load the config settings from Bosh registry: the registry HTTP address is provided to the Bosh agent via a injected user-data.json file when the [Rackspace CPI] (https://github.com/cloudfoundry/bosh/bosh_rackspace_cpi/) creates the instance.
+* `bosh_agent -c -I vsphere` => attempts to load the config settings via a mounted fake cdrom created by the [vSphere CPI] (https://github.com/cloudfoundry/bosh/bosh_vsphere_cpi/).
 
 If the settings cannot be found as above, then it looks for a file `/var/vcap/bosh/settings.json` and loads that.
 

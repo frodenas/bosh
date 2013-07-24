@@ -83,4 +83,29 @@ describe Bosh::Agent::Platform::Ubuntu::Network do
       network_wrapper.setup_networking
     end
   end
+
+  context 'Rackspace' do
+    let(:partial_settings) do
+      json = %q[{"networks":{"default":{"dns":["1.2.3.4"],"default":["gateway","dns"]}}]
+      Yajl::Parser.new.parse(json)
+    end
+
+    before do
+      Bosh::Agent::Config.infrastructure_name = 'rackspace'
+      Bosh::Agent::Config.instance_variable_set :@infrastructure, nil
+      Bosh::Agent::Config.infrastructure.stub(:load_settings).and_return(partial_settings)
+      Bosh::Agent::Config.settings = partial_settings
+      File.should_receive(:read).with('/etc/resolv.conf').and_return('nameserver 5.6.7.8')
+    end
+
+    it 'should configure resolv.conf with dns server prepended' do
+      Bosh::Agent::Util.should_receive(:update_file) do |contents, file|
+        expect(contents).to eql("nameserver 1.2.3.4\nnameserver 5.6.7.8\n")
+        expect(file).to eql('/etc/resolv.conf')
+        true # fake a change
+      end
+
+      network_wrapper.setup_networking
+    end
+  end
 end

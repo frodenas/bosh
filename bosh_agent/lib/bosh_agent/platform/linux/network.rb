@@ -16,10 +16,10 @@ module Bosh::Agent
       case @config.infrastructure_name
         when "vsphere"
           setup_networking_from_settings
-        when "aws"
+        when "aws", "openstack"
           setup_dhcp_from_settings
-        when "openstack"
-          setup_dhcp_from_settings
+        when "rackspace"
+          setup_resolv_from_settings
         else
           raise Bosh::Agent::FatalError, "Setup networking failed, unsupported infrastructure #{Bosh::Agent::Config.infrastructure_name}"
       end
@@ -48,7 +48,7 @@ module Bosh::Agent
       end
 
       write_network_interfaces
-      write_resolv_conf
+      write_resolv_conf(dns)
       gratuitous_arp
     end
 
@@ -56,6 +56,18 @@ module Bosh::Agent
       unless dns.empty?
         write_dhcp_conf
       end
+    end
+
+    def setup_resolv_from_settings
+      # Detect existing nameservers
+      existing_ns = detect_resolv_nameservers
+
+      # Merge existing nameservers with new nameservers from network settings
+      nameservers = dns
+      nameservers.concat(existing_ns.last(2)).uniq
+
+      # Write resolv.conf with new settings
+      write_resolv_conf(nameservers) unless nameservers.empty?
     end
 
     def dns
@@ -81,10 +93,27 @@ module Bosh::Agent
       mac_addresses
     end
 
-    def write_resolv_conf
-      template = ERB.new("<% dns.each do |server| %>\nnameserver <%= server %>\n<% end %>\n", 0, '%<>')
+    ##
+    # Read resolv.conf and extract nameserver directives
+    #
+    # @return [Array<String>] Nameserver IP addresses
+    def detect_resolv_nameservers
+      begin
+        nameservers = File.read('/etc/resolv.conf').split("\n").uniq
+        nameservers.keep_if { |ns| ns.match(/^nameserver/) }
+        nameservers.map! { |ns| ns.gsub(/nameserver/, '').strip }
+      rescue Errno::ENOENT
+        nameservers = []
+      end
+
+      nameservers
+    end
+
+    def write_resolv_conf(nameservers)
+      template = ERB.new("<% nameservers.each do |server| %>\nnameserver <%= server %>\n<% end %>\n", 0, '%<>')
       result = template.result(binding)
-      Bosh::Agent::Util::update_file(result, '/etc/resolv.conf')
+      updated = Bosh::Agent::Util::update_file(result, '/etc/resolv.conf')
+      @logger.info('Updated resolv.conf') if updated
     end
 
     def gratuitous_arp

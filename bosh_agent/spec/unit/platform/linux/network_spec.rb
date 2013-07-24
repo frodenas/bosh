@@ -145,6 +145,58 @@ describe Bosh::Agent::Platform::Linux::Network do
     end
   end
 
+  context :setup_resolv_from_settings do
+    before do
+      Bosh::Agent::Config.infrastructure.stub(:load_settings).and_return(partial_settings)
+      Bosh::Agent::Config.settings = partial_settings
+    end
+
+    context 'when resolv.conf is not empty' do
+      let(:resolv_contents) { "# This is resolv.conf\nnameserver 10.11.12.13\n" }
+
+      before do
+        File.should_receive(:read).with('/etc/resolv.conf').and_return(resolv_contents)
+      end
+
+      it 'should merge resolv nameservers with dns from the network settings' do
+        network_wrapper.should_receive(:write_resolv_conf).with(['1.2.3.4', '5.6.7.8', '10.11.12.13'])
+        network_wrapper.setup_resolv_from_settings
+      end
+
+      context 'when there are more than 2 nameservers' do
+        let(:resolv_contents) { "# This is resolv.conf\nnameserver 9.10.11.12\n" +
+                                "nameserver 10.11.12.13\nnameserver 14.15.16.17\n" }
+
+        it 'should merge the last 2 resolv nameservers with dns from the network settings' do
+          network_wrapper.should_receive(:write_resolv_conf).with(['1.2.3.4', '5.6.7.8', '10.11.12.13', '14.15.16.17'])
+          network_wrapper.setup_resolv_from_settings
+        end
+      end
+    end
+
+    context 'when resolv.conf is empty' do
+      before do
+        File.should_receive(:read).with('/etc/resolv.conf').and_return('')
+      end
+
+      it 'should pick only the dns from the network settings' do
+        network_wrapper.should_receive(:write_resolv_conf).with(['1.2.3.4', '5.6.7.8'])
+        network_wrapper.setup_resolv_from_settings
+      end
+    end
+
+    context 'when resolv.conf file does not exist' do
+      before do
+        File.should_receive(:read).with('/etc/resolv.conf').and_raise(Errno::ENOENT)
+      end
+
+      it 'should pick only the dns from the network settings' do
+        network_wrapper.should_receive(:write_resolv_conf).with(['1.2.3.4', '5.6.7.8'])
+        network_wrapper.setup_resolv_from_settings
+      end
+    end
+  end
+
   context "Unsupported Infrastructure" do
     before do
       Bosh::Agent::Config.infrastructure_name = "something not supported"
@@ -211,6 +263,25 @@ describe Bosh::Agent::Platform::Linux::Network do
 
       network_wrapper.setup_networking
       network_wrapper.wrote_dhcp_conf.should be_true
+    end
+  end
+
+  context 'Rackspace' do
+    before do
+      Bosh::Agent::Config.infrastructure_name = 'rackspace'
+      Bosh::Agent::Config.instance_variable_set :@infrastructure, nil
+      Bosh::Agent::Config.infrastructure.stub(:load_settings).and_return(partial_settings)
+      Bosh::Agent::Config.settings = partial_settings
+      File.should_receive(:read).with('/etc/resolv.conf').and_return('nameserver 10.11.12.13')
+    end
+
+    it "should update the resolv.conf file" do
+      Bosh::Agent::Util.should_receive(:update_file) do |result, file_path|
+        expect(result).to eql("nameserver 1.2.3.4\nnameserver 5.6.7.8\nnameserver 10.11.12.13\n")
+        expect(file_path).to eql('/etc/resolv.conf')
+      end
+
+      network_wrapper.setup_networking
     end
   end
 end
