@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
+
+# Copyright (c) 2013 GoPivotal, Inc.
+
+$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+
+require 'bosh_rackspace_cpi'
+require 'irb'
+require 'irb/completion'
+require 'ostruct'
+require 'optparse'
+
+config_file = nil
+opts_parser = OptionParser.new do |opts|
+  opts.on('-c', '--config FILE') { |file| config_file = file }
+end
+opts_parser.parse!
+
+unless config_file
+  puts opts_parser
+  exit(1)
+end
+
+@config = Psych.load_file(config_file)
+
+##
+# Helpers for the BOSH Rackspace CPI console
+module ConsoleHelpers
+  def cpi
+    @cpi ||= Bosh::RackspaceCloud::Cloud.new(@config)
+  end
+
+  def compute
+    cpi.compute_api
+  end
+
+  def blockstorage
+    cpi.blockstorage_api
+  end
+
+  def registry
+    cpi.registry
+  end
+end
+
+Bosh::Clouds::Config.configure(OpenStruct.new(logger: Logger.new(STDOUT)))
+
+puts '=> Welcome to BOSH Rackspace CPI console'
+puts 'You can use "cpi" to access Bosh::RackspaceCloud::Cloud methods'
+puts 'You can use "compute" to access Fog::Compute::RackspaceV2 methods'
+puts 'You can use "blockstorage" to access Fog::Rackspace::BlockStorage methods'
+puts 'You can use "registry" to access Bosh::Registry::Client methods'
+
+include ConsoleHelpers
+IRB.start

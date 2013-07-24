@@ -1,0 +1,8 @@
+inherit_from: ../.rubocop.yml
+
+ParameterLists:
+  Max: 6 # We'll reduce this later
+
+MethodLength:
+  CountComments: false
+  Max: 15 # We'll reduce this later

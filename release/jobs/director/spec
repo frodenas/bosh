@@ -279,6 +279,16 @@ properties:
     description: Default OpenStack keypair to use when spinning up new vms
   openstack.default_security_groups:
     description: Default OpenStack security groups to use when spinning up new vms
+  rackspace.username:
+    description: Rackspace Username
+  rackspace.api_key:
+    description: Rackspace API key
+  rackspace.region:
+    description: Rackspace region (optional)
+  rackspace.auth_url:
+    description: Rackspace authorization endpoint (optional)
+  rackspace.connection_options:
+    description: Connection parameters (optional)
   vcenter.address:
     description: Address of vCenter server used by vsphere cpi
   vcenter.user:

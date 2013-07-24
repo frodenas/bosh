@@ -118,6 +118,17 @@ PATH
       yajl-ruby (>= 0.8.2)
 
 PATH
+  remote: bosh_rackspace_cpi
+  specs:
+    bosh_rackspace_cpi (1.5.0.pre.3)
+      bosh_common (~> 1.5.0.pre.3)
+      bosh_cpi (~> 1.5.0.pre.3)
+      bosh_registry (~> 1.5.0.pre.3)
+      fog (~> 1.12.1)
+      httpclient (= 2.2.4)
+      yajl-ruby (>= 0.8.2)
+
+PATH
   remote: bosh_registry
   specs:
     bosh_registry (1.5.0.pre.3)
@@ -428,6 +439,7 @@ DEPENDENCIES
   bosh_cpi!
   bosh_encryption!
   bosh_openstack_cpi!
+  bosh_rackspace_cpi!
   bosh_registry!
   bosh_vsphere_cpi!
   ci_reporter

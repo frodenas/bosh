@@ -9,6 +9,7 @@ COMPONENTS = %w(agent_client
                 bosh_cpi
                 bosh_encryption
                 bosh_openstack_cpi
+                bosh_rackspace_cpi
                 bosh_registry
                 bosh_vsphere_cpi
                 director
