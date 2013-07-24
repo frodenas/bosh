@@ -117,7 +117,7 @@ namespace :stemcell do
   def default_options(args)
     infrastructure = args[:infrastructure]
     unless infrastructure
-      STDERR.puts 'Please specify target infrastructure (vsphere, aws, openstack)'
+      STDERR.puts 'Please specify target infrastructure (vsphere, aws, openstack, rackspace)'
       exit 1
     end
 
@@ -143,7 +143,7 @@ namespace :stemcell do
       when 'vsphere'
         # Pass OVFTOOL environment variable when targeting vsphere
         options[:image_vsphere_ovf_ovftool_path] = ENV['OVFTOOL']
-      when 'openstack'
+      when 'openstack', 'rackspace'
         # Increase the disk size to 10Gb to deal with flavors that doesn't have ephemeral disk
         options[:image_create_disk_size] = 10240 unless args[:disk_size]
     end
@@ -174,6 +174,8 @@ namespace :stemcell do
         hypervisor = 'xen'
       when 'openstack'
         hypervisor = 'kvm'
+      when 'rackspace'
+        hypervisor = 'xen'
       else
         raise "Unknown infrastructure: #{infrastructure}"
     end

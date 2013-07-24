@@ -18,7 +18,7 @@ bosh_users_password=c1oudc0w
 # bosh_micro_release_tgz_path=/path/to/release.tgz
 
 # parameters for `system_parameters`
-# system_parameters_infrastructure=vsphere|aws|openstack
+# system_parameters_infrastructure=vsphere|aws|openstack|rackspace
 
 # parameters for `image_create`
 # image_create_disk_size=2048
@@ -29,6 +29,6 @@ bosh_users_password=c1oudc0w
 # parameters for `stemcell`
 # stemcell_name=untitled
 # stemcell_version=unknown
-# stemcell_infrastructure=vsphere|aws|openstack
+# stemcell_infrastructure=vsphere|aws|openstack|rackspace
 # stemcell_hypervisor=esxi|xen|kvm
 # bosh_protocol_version=unknown

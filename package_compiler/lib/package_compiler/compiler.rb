@@ -144,9 +144,7 @@ module Bosh
         case @options[:cpi]
         when "vsphere", "vcloud"
           spec["networks"] = {"local" => {"ip" => "127.0.0.1"}}
-        when "aws"
-          spec["networks"] = {"type" => "dynamic"}
-        when "openstack"
+        when "aws", "openstack", "rackspace"
           spec["networks"] = {"type" => "dynamic"}
         else
           puts "WARNING: no CPI specified"
