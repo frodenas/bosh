@@ -160,6 +160,7 @@ PATH
       bosh_cpi (~> 1.5.0.pre.3)
       bosh_encryption (~> 1.5.0.pre.3)
       bosh_openstack_cpi (~> 1.5.0.pre.3)
+      bosh_rackspace_cpi (~> 1.5.0.pre.3)
       bosh_vcloud_cpi (~> 0.4.9)
       bosh_vsphere_cpi (~> 1.5.0.pre.3)
       eventmachine (~> 0.12.9)
